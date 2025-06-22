@@ -1,9 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { likePost } from "@/lib/db"
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const postId = params.id
+    const { id } = await params
+    const postId = id
     const updatedPost = await likePost(postId)
     return NextResponse.json(updatedPost)
   } catch (error) {

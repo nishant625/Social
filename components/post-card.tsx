@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Heart } from "lucide-react"
+import { Heart, MessageCircle } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import Link from "next/link"
 
@@ -20,11 +20,15 @@ interface PostCardProps {
       username: string
       avatarUrl?: string
     }
+    _count?: {
+      comments: number
+    }
   }
   onLike: () => void
+  onComment: () => void
 }
 
-export function PostCard({ post, onLike }: PostCardProps) {
+export function PostCard({ post, onLike, onComment }: PostCardProps) {
   const timeAgo = formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })
 
   return (
@@ -74,15 +78,27 @@ export function PostCard({ post, onLike }: PostCardProps) {
           )}
 
           <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onLike}
-              className="flex items-center space-x-2 text-gray-600 hover:text-red-500 hover:bg-red-50 transition-colors"
-            >
-              <Heart className="w-5 h-5" />
-              <span>{post.likeCount}</span>
-            </Button>
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onLike}
+                className="flex items-center space-x-2 text-gray-600 hover:text-red-500 hover:bg-red-50 transition-colors"
+              >
+                <Heart className="w-5 h-5" />
+                <span>{post.likeCount}</span>
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onComment}
+                className="flex items-center space-x-2 text-gray-600 hover:text-blue-500 hover:bg-blue-50 transition-colors"
+              >
+                <MessageCircle className="w-5 h-5" />
+                <span>{post._count?.comments || 0}</span>
+              </Button>
+            </div>
           </div>
         </div>
       </CardContent>

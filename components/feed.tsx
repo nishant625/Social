@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { PostCard } from "./post-card"
+import { CommentsModal } from "./comments-modal"
 
 interface Post {
   id: string
@@ -15,11 +16,15 @@ interface Post {
     username: string
     avatarUrl?: string
   }
+  _count?: {
+    comments: number
+  }
 }
 
 export function Feed() {
   const [posts, setPosts] = useState<Post[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null)
 
   useEffect(() => {
     fetchPosts()
@@ -52,6 +57,16 @@ export function Feed() {
     } catch (error) {
       console.error("Error liking post:", error)
     }
+  }
+
+  const handleComment = (postId: string) => {
+    setSelectedPostId(postId)
+  }
+
+  const closeCommentsModal = () => {
+    setSelectedPostId(null)
+    // Refresh posts to get updated comment counts
+    fetchPosts()
   }
 
   if (isLoading) {
@@ -89,10 +104,19 @@ export function Feed() {
   }
 
   return (
-    <div className="space-y-6">
-      {posts.map((post) => (
-        <PostCard key={post.id} post={post} onLike={() => handleLike(post.id)} />
-      ))}
-    </div>
+    <>
+      <div className="space-y-6">
+        {posts.map((post) => (
+          <PostCard
+            key={post.id}
+            post={post}
+            onLike={() => handleLike(post.id)}
+            onComment={() => handleComment(post.id)}
+          />
+        ))}
+      </div>
+
+      <CommentsModal isOpen={selectedPostId !== null} onClose={closeCommentsModal} postId={selectedPostId || ""} />
+    </>
   )
 }
